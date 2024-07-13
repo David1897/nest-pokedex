@@ -10,5 +10,6 @@ import { Pokedex, PokedexSchema } from './entities/pokedex.entity';
   ],
   controllers: [PokedexController],
   providers: [PokedexService],
+  exports: [MongooseModule],
 })
 export class PokedexModule {}
