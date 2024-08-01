@@ -10,12 +10,19 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Pokedex } from './entities/pokedex.entity';
 import { isValidObjectId, Model } from 'mongoose';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PokedexService {
+  private defaultLimit: number;
   constructor(
-    @InjectModel(Pokedex.name) private readonly pokedexModel: Model<Pokedex>,
-  ) {}
+    @InjectModel(Pokedex.name)
+    private readonly pokedexModel: Model<Pokedex>,
+    private readonly configService: ConfigService,
+  ) {
+    this.defaultLimit = configService.get<number>('defaultlimit');
+    // console.log({ DefaultLimit: configService.get<number>('defaultlimit') });
+  }
   async create(createPokedexDto: CreatePokedexDto) {
     createPokedexDto.name = createPokedexDto.name.toLocaleLowerCase();
 
@@ -28,7 +35,7 @@ export class PokedexService {
   }
 
   findAll(paginationDto: PaginationDto) {
-    const { limit = 10, offset = 0 } = paginationDto;
+    const { limit = this.defaultLimit, offset = 0 } = paginationDto;
 
     return this.pokedexModel
       .find()
